@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Financial Stewardship – Chapter-by-Chapter Quizzes</title>
+  <style>
+    :root {
+      --bg: #0f172a;          /* slate-900 */
+      --card: #111827;        /* gray-900 */
+      --muted: #94a3b8;       /* slate-400 */
+      --text: #e5e7eb;        /* gray-200 */
+      --accent: #22c55e;      /* green-500 */
+      --accent-2: #3b82f6;    /* blue-500 */
+      --danger: #ef4444;      /* red-500 */
+      --warning: #f59e0b;     /* amber-500 */
+      --ring: rgba(59,130,246,0.35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 600px at 70% -10%, #1e293b 0, var(--bg) 60%); color: var(--text);
+    }
+    header { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(10px); background: rgba(15,23,42,0.6); border-bottom: 1px solid #23304a; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 1rem 1.25rem; }
+    .title { display:flex; align-items:center; gap:.75rem; }
+    .title h1 { font-size: 1.25rem; margin: 0; letter-spacing:.2px; }
+    .pill { font-size: .75rem; padding:.25rem .6rem; border:1px solid #23304a; border-radius: 999px; color: var(--muted); }
+    .chapters-bar { display:flex; overflow:auto; gap:.5rem; padding:.5rem 0 .75rem; }
+    .chapters-bar button { white-space:nowrap; border:1px solid #1f2a44; background:#0b1222; color:#cbd5e1; padding:.5rem .75rem; border-radius:999px; cursor:pointer; }
+    .chapters-bar button.active { background: linear-gradient(90deg, var(--accent-2), var(--accent)); color: #0b1222; border: none; }
+
+    main { padding: 1.25rem; }
+    .card { background: linear-gradient(180deg, #0b1222, var(--card)); border: 1px solid #1f2a44; border-radius: 1rem; padding: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    h2 { margin-top: 0; font-size: 1.1rem; letter-spacing:.2px; }
+
+    .q { border:1px solid #1f2a44; border-radius:.85rem; padding: .85rem; margin: .75rem 0; background:#0b1222; }
+    .q h3 { font-size: 1rem; margin: 0 0 .5rem 0; font-weight: 600; }
+    .opts { display:grid; gap:.35rem; margin-top:.25rem; }
+    .opt { display:flex; gap:.5rem; align-items:flex-start; padding:.45rem .55rem; border-radius:.65rem; transition: background .2s ease, outline-color .2s ease; }
+    .opt:hover { background:#0e1527; }
+    .opt input { transform: translateY(3px); }
+
+    .meta { display:flex; gap:.75rem; align-items:center; color: var(--muted); font-size:.9rem; }
+
+    .controls { display:flex; flex-wrap: wrap; gap:.5rem; margin-top: .85rem; }
+    .btn { border:1px solid #1f2a44; background:#0b1222; color:#e2e8f0; padding:.6rem .9rem; border-radius:.7rem; cursor:pointer; }
+    .btn.primary { background: linear-gradient(90deg, var(--accent-2), var(--accent)); color:#0b1222; border:none; font-weight:700; }
+    .btn.warn { border-color: #2a1e09; background: #201106; }
+    .score { font-weight: 700; }
+
+    .correct { outline: 2px solid var(--accent); background: rgba(34,197,94,0.08); }
+    .incorrect { outline: 2px solid var(--danger); background: rgba(239,68,68,0.08); }
+    .explain { color: #cbd5e1; font-size: .92rem; margin-top:.4rem; display:none; }
+    .show-explain .explain { display:block; }
+
+    footer { color: var(--muted); text-align:center; padding: 2rem 1rem; }
+    a { color: #93c5fd; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="title">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15V6a2 2 0 0 0-2-2H8l-5 5v6a2 2 0 0 0 2 2h6"/><path d="M18 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>
+        <h1>Financial Stewardship – Chapter Quizzes</h1>
+        <span class="pill">Checkbox Edition · 7 Qs per chapter</span>
+      </div>
+      <div id="chaptersBar" class="chapters-bar" aria-label="Chapters navigation"></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div id="quizCard" class="card" role="region" aria-live="polite"></div>
+  </main>
+
+  <footer>
+    Built for quick practice. Select a chapter above, check your answers, and view explanations. You can reset anytime.
+  </footer>
+
+  <script>
+    // ===== DATA =====
+    // Each question uses CHECKBOXES. For single-answer items, only one index is placed in `answer`.
+    // Chapters reflect the Table of Contents from Andrew Wommack's "Financial Stewardship".
+
+    const QUIZ = [
+      {
+        title: "1) Being a Steward",
+        questions: [
+          {
+            q: "What best defines a biblical steward?",
+            options: [
+              "Someone who owns everything they manage",
+              "Someone entrusted to manage what belongs to another",
+              "Someone who gives only when convenient",
+              "Someone who avoids talking about money"
+            ],
+            answer: [1],
+            explain: "In Scripture, a steward manages resources that ultimately belong to God (see Luke 16)."
+          },
+          {
+            q: "Which attitudes reflect stewardship rather than ownership? (Select all that apply)",
+            options: [
+              "I’m accountable to God for how I use money",
+              "My money is mine alone to do as I want",
+              "I seek God’s purpose for every resource I handle",
+              "I disconnect faith from finances"
+            ],
+            answer: [0,2],
+            explain: "Stewardship keeps God’s ownership and our accountability in view across finances and life."
+          },
+          {
+            q: "According to the book, what is the first step toward true prosperity?",
+            options: [
+              "Harder work",
+              "Recognizing God as the source and ourselves as stewards",
+              "Cutting all expenses",
+              "Avoiding generosity"
+            ],
+            answer: [1],
+            explain: "Prosperity begins by aligning identity: God is the source; we are stewards."
+          },
+          {
+            q: "Abraham’s prosperity primarily came from…",
+            options: [
+              "His flawless decisions",
+              "God’s blessing",
+              "His bargaining skills",
+              "Inheritance from Lot"
+            ],
+            answer: [1],
+            explain: "The narrative emphasizes God’s blessing, not human perfection, as the source."
+          },
+          {
+            q: "Which statements mirror a stewardship mindset? (Select all that apply)",
+            options: [
+              "God has a purpose for the resources I handle",
+              "I measure success only by accumulation",
+              "Generosity is part of worship",
+              "Finances are separate from spiritual life"
+            ],
+            answer: [0,2],
+            explain: "Stewardship integrates faith, purpose, and generosity."
+          },
+          {
+            q: "Why did Abraham refuse spoils from the King of Sodom?",
+            options: [
+              "He didn’t need money",
+              "He wanted no human to claim they made him rich, preserving God’s glory",
+              "He feared the king",
+              "He had already tithed"
+            ],
+            answer: [1],
+            explain: "Abraham wanted God acknowledged as his source, not earthly rulers."
+          },
+          {
+            q: "Money should be viewed as…",
+            options: [
+              "A master to obey",
+              "A neutral tool to serve God’s purposes",
+              "A sign of moral superiority",
+              "Something Christians should never discuss"
+            ],
+            answer: [1],
+            explain: "Money is a tool; our heart posture determines whether it serves God’s kingdom."
+          }
+        ]
+      },
+      {
+        title: "2) God Is a Giver",
+        questions: [
+          {
+            q: "Which truths reflect God’s giving nature? (Select all that apply)",
+            options: [
+              "God loved and gave (John 3:16)",
+              "God gives wisdom generously (James 1:5)",
+              "God only gives to the perfect",
+              "Every good gift is from above (James 1:17)"
+            ],
+            answer: [0,1,3],
+            explain: "Scripture consistently reveals God as generous; His grace is not limited to the flawless."
+          },
+          {
+            q: "A steward who believes God is a giver will likely…",
+            options: [
+              "Hoards out of fear",
+              "Gives cheerfully and trusts provision",
+              "Avoids prayer about money",
+              "Despises budgeting"
+            ],
+            answer: [1],
+            explain: "Confidence in God’s character fosters cheerful, faith-filled generosity."
+          },
+          {
+            q: "Which statements align with grace-based provision? (Select all that apply)",
+            options: [
+              "Provision is ultimately rooted in God’s generosity",
+              "I must earn God’s love to be provided for",
+              "God invites us to ask and receive",
+              "God’s gifts always match our performance"
+            ],
+            answer: [0,2],
+            explain: "Grace is unearned favor; we still practice wisdom and diligence as stewards."
+          },
+          {
+            q: "Viewing God as stingy often results in…",
+            options: [
+              "Fear and reluctance to give",
+              "Freedom and generosity",
+              "Clarity of purpose",
+              "Increased gratitude"
+            ],
+            answer: [0],
+            explain: "Our view of God shapes our financial posture."
+          },
+          {
+            q: "Which practices reflect trust in God’s generosity? (Select all that apply)",
+            options: [
+              "Prayerful planning",
+              "Radical impulsivity without counsel",
+              "Contentment",
+              "Thanksgiving in lack and plenty"
+            ],
+            answer: [0,2,3],
+            explain: "Trust produces gratitude, contentment, and wise planning."
+          },
+          {
+            q: "Generosity without relationship with God can lead to…",
+            options: [
+              "Burnout or resentment",
+              "Greater intimacy",
+              "Perfect outcomes",
+              "Guaranteed wealth"
+            ],
+            answer: [0],
+            explain: "Giving flows best from knowing God’s heart, not from pressure."
+          },
+          {
+            q: "The ultimate example of God as a giver is…",
+            options: [
+              "Material prosperity",
+              "The gift of His Son for our salvation",
+              "Winning business deals",
+              "Angel sightings"
+            ],
+            answer: [1],
+            explain: "John 3:16 anchors Christian generosity in God’s self-giving love."
+          }
+        ]
+      },
+      {
+        title: "3) Greater Things",
+        questions: [
+          {
+            q: "What are the ‘greater things’ stewardship points toward?",
+            options: [
+              "Comfort and ease",
+              "Kingdom impact and eternal rewards",
+              "Approval from people",
+              "Escaping responsibility"
+            ],
+            answer: [1],
+            explain: "Faithful stewardship aims at eternal fruit, not merely temporal comfort."
+          },
+          {
+            q: "Which choices align with living for greater things? (Select all that apply)",
+            options: [
+              "Seeking first God’s kingdom",
+              "Using resources to serve others",
+              "Chasing status symbols",
+              "Investing in gospel work"
+            ],
+            answer: [0,1,3],
+            explain: "Greater things means prioritizing kingdom purposes over image."
+          },
+          {
+            q: "A short-term mindset can hinder stewardship by…",
+            options: [
+              "Encouraging sacrificial love",
+              "Fueling impulse spending and shallow goals",
+              "Clarifying calling",
+              "Strengthening discipline"
+            ],
+            answer: [1],
+            explain: "Eternal perspective counters aimless, impulsive choices."
+          },
+          {
+            q: "Which practices cultivate an eternal perspective? (Select all that apply)",
+            options: [
+              "Regular Scripture meditation",
+              "Intentional generosity",
+              "Ignoring accountability",
+              "Serving in community"
+            ],
+            answer: [0,1,3],
+            explain: "Formation happens through Scripture, community, and generosity."
+          },
+          {
+            q: "Fruitfulness in stewardship is measured primarily by…",
+            options: [
+              "Faithfulness and impact, not mere accumulation",
+              "Public recognition",
+              "Followers on social media",
+              "Luxury goods owned"
+            ],
+            answer: [0],
+            explain: "Biblically, fruitfulness = faithfulness that advances God’s purposes."
+          },
+          {
+            q: "When faced with a lucrative but unethical opportunity, a steward should…",
+            options: [
+              "Take it quickly",
+              "Pray and choose integrity over profit",
+              "Poll friends for permission",
+              "Ignore conscience"
+            ],
+            answer: [1],
+            explain: "Kingdom alignment outranks short-term gain."
+          },
+          {
+            q: "‘Greater things’ most directly contrasts with…",
+            options: [
+              "Humble service",
+              "Eternal hope",
+              "Small self-centered living",
+              "Purposeful sacrifice"
+            ],
+            answer: [2],
+            explain: "It’s the difference between me-centered goals and kingdom-centered purpose."
+          }
+        ]
+      },
+      {
+        title: "4) Hidden Treasure",
+        questions: [
+          {
+            q: "The ‘hidden treasure’ theme points to…",
+            options: [
+              "Secrets to guaranteed riches",
+              "Wisdom and revelation in God’s Word and presence",
+              "Lottery strategies",
+              "Avoiding diligence"
+            ],
+            answer: [1],
+            explain: "Treasure language echoes Scripture’s call to seek wisdom and God’s kingdom."
+          },
+          {
+            q: "Which reflect searching for hidden treasure? (Select all that apply)",
+            options: [
+              "Prayerful seeking of God’s guidance",
+              "Learning skills to increase usefulness",
+              "Neglecting counsel",
+              "Meditating on Scripture"
+            ],
+            answer: [0,1,3],
+            explain: "Treasure is found by seeking God, Scripture, and wise growth."
+          },
+          {
+            q: "Why does gratitude help ‘uncover treasure’?",
+            options: [
+              "It blinds us to reality",
+              "It tunes our heart to notice God’s provision and opportunities",
+              "It guarantees immediate wealth",
+              "It replaces stewardship"
+            ],
+            answer: [1],
+            explain: "Gratitude sharpens awareness of God’s gifts and next steps."
+          },
+          {
+            q: "A practical way to pursue hidden treasure is…",
+            options: [
+              "Ignoring budgets",
+              "Tracking finances prayerfully",
+              "Comparing with others",
+              "Avoiding mentors"
+            ],
+            answer: [1],
+            explain: "Attention and prayer reveal patterns and opportunities."
+          },
+          {
+            q: "God’s wisdom typically comes…",
+            options: [
+              "Instantly without process",
+              "Through Scripture, prayer, counsel, and experience",
+              "Only to leaders",
+              "Only through visions"
+            ],
+            answer: [1],
+            explain: "God uses multiple means to guide stewards."
+          },
+          {
+            q: "Seeking treasure in God leads to… (Select all that apply)",
+            options: [
+              "Deeper contentment",
+              "Clearer priorities",
+              "Greater impulse spending",
+              "Greater resilience"
+            ],
+            answer: [0,1,3],
+            explain: "Treasure in God reorders desires and strengthens endurance."
+          },
+          {
+            q: "The opposite of seeking hidden treasure is…",
+            options: [
+              "Passive drift and neglect",
+              "Diligent inquiry",
+              "Prayerful learning",
+              "Wise planning"
+            ],
+            answer: [0],
+            explain: "Neglect misses what God is eager to reveal."
+          }
+        ]
+      },
+      {
+        title: "5) Seek First the Kingdom",
+        questions: [
+          {
+            q: "To ‘seek first the kingdom’ primarily means…",
+            options: [
+              "Add God after other goals",
+              "Prioritize God’s reign and righteousness above all",
+              "Ignore work and planning",
+              "Avoid money entirely"
+            ],
+            answer: [1],
+            explain: "Matthew 6:33 is about priority: God first, then everything else in right order."
+          },
+          {
+            q: "What follows when believers seek first the kingdom?",
+            options: [
+              "All needs are added in God’s way and time",
+              "Instant luxury",
+              "Freedom from effort",
+              "Guaranteed promotion"
+            ],
+            answer: [0],
+            explain: "Provision accompanies right priority, not prosperity myths."
+          },
+          {
+            q: "Which habits align with seeking first? (Select all that apply)",
+            options: [
+              "Starting decisions with prayer",
+              "Tithing or planned generosity",
+              "Isolating from Christian community",
+              "Serving with your gifts"
+            ],
+            answer: [0,1,3],
+            explain: "Priority shows in prayer, planned giving, and service."
+          },
+          {
+            q: "Anxiety about money often signals…",
+            options: [
+              "Kingdom-first clarity",
+              "Misdirected trust or priorities",
+              "More faith than usual",
+              "Perfect planning"
+            ],
+            answer: [1],
+            explain: "Anxiety invites realignment of trust and focus."
+          },
+          {
+            q: "Which is wise kingdom-focused planning?",
+            options: [
+              "No budget; just faith",
+              "Prayerful budgeting with generosity and margin",
+              "Endless hustle with no rest",
+              "Comparing lifestyles"
+            ],
+            answer: [1],
+            explain: "Stewards plan with prayer, generosity, and margin for obedience."
+          },
+          {
+            q: "Seeking first the kingdom changes giving by…",
+            options: [
+              "Making it central, cheerful, and purposeful",
+              "Eliminating it",
+              "Turning it into pressure",
+              "Delaying all giving until ‘rich’"
+            ],
+            answer: [0],
+            explain: "Kingdom-first giving is joyful and strategic."
+          },
+          {
+            q: "The opposite of seeking first is…",
+            options: [
+              "Self-first living that uses God as an add-on",
+              "Obedient generosity",
+              "Prayerful waiting",
+              "Wise counsel"
+            ],
+            answer: [0],
+            explain: "God isn’t an accessory; He is Lord."
+          }
+        ]
+      },
+      {
+        title: "6) Prosperity Isn’t Selfish",
+        questions: [
+          {
+            q: "According to the book, biblical prosperity is…",
+            options: [
+              "Primarily for self-indulgence",
+              "For resourcing God’s purposes and blessing others",
+              "A badge of spiritual superiority",
+              "A guarantee of ease"
+            ],
+            answer: [1],
+            explain: "Prosperity serves mission and people, not ego."
+          },
+          {
+            q: "Which reflect unselfish prosperity? (Select all that apply)",
+            options: [
+              "Funding gospel work",
+              "Supporting the poor",
+              "Collecting status symbols",
+              "Equipping others to flourish"
+            ],
+            answer: [0,1,3],
+            explain: "Resources are tools to love God and neighbor."
+          },
+          {
+            q: "A prosperity mindset becomes selfish when…",
+            options: [
+              "It disconnects from generosity and mission",
+              "It fuels hospitality",
+              "It enables service",
+              "It partners with ministries"
+            ],
+            answer: [0],
+            explain: "Self-focus distorts stewardship."
+          },
+          {
+            q: "What protects against selfish drift? (Select all that apply)",
+            options: [
+              "Accountability",
+              "Regular generosity rhythms",
+              "Isolation",
+              "Remembering the Source"
+            ],
+            answer: [0,1,3],
+            explain: "Community, habits, and gratitude keep the heart aligned."
+          },
+          {
+            q: "Which picture best fits biblical prosperity?",
+            options: [
+              "A reservoir that stores for self",
+              "A river that channels blessing onward",
+              "A vault of trophies",
+              "A ladder of status"
+            ],
+            answer: [1],
+            explain: "Blessed to be a blessing: in and through us."
+          },
+          {
+            q: "Unselfish prosperity affects work by…",
+            options: [
+              "Making excellence and integrity part of worship",
+              "Encouraging shortcuts",
+              "Despising small beginnings",
+              "Avoiding fair pay"
+            ],
+            answer: [0],
+            explain: "Work becomes a venue for witness and service."
+          },
+          {
+            q: "A sign prosperity has become selfish is…",
+            options: [
+              "Joyful, quiet giving",
+              "Chronic comparison and envy",
+              "Steady contentment",
+              "Wise savings for generosity"
+            ],
+            answer: [1],
+            explain: "Envy reveals a heart captured by status rather than purpose."
+          }
+        ]
+      },
+      {
+        title: "7) The Tithe",
+        questions: [
+          {
+            q: "Tithing, in biblical terms, most directly refers to…",
+            options: [
+              "Any random donation",
+              "Giving a tenth as a dedicated portion to God",
+              "Only offerings to the poor",
+              "A tax enforced by governments"
+            ],
+            answer: [1],
+            explain: "Historically the tithe is a tenth, given as worship and support of God’s work."
+          },
+          {
+            q: "What heart posture should accompany tithing? (Select all that apply)",
+            options: [
+              "Cheerfulness",
+              "Compulsion",
+              "Faith and gratitude",
+              "Showmanship"
+            ],
+            answer: [0,2],
+            explain: "New Testament giving emphasizes cheerful, faith-filled worship."
+          },
+          {
+            q: "Which statements reflect balanced teaching on tithing? (Select all that apply)",
+            options: [
+              "God owns it all; the tithe expresses trust",
+              "Giving is a means of grace, not a bribe",
+              "Tithing replaces generosity",
+              "We still plan, budget, and act wisely"
+            ],
+            answer: [0,1,3],
+            explain: "Tithing sits inside a larger life of stewardship and wisdom."
+          },
+          {
+            q: "A danger in talking about tithing is…",
+            options: [
+              "Turning it into legalism or a prosperity formula",
+              "Encouraging worship",
+              "Teaching budgeting",
+              "Inviting prayer"
+            ],
+            answer: [0],
+            explain: "The heart matters; formulas miss the relational nature of giving."
+          },
+          {
+            q: "In practice, tithing can help… (Select all that apply)",
+            options: [
+              "Create intentionality",
+              "Fund ministry and mission",
+              "Eliminate the need for integrity",
+              "Form habits of trust"
+            ],
+            answer: [0,1,3],
+            explain: "Regular planned giving forms the heart and funds the work."
+          },
+          {
+            q: "A steward who tithes but refuses accountability…",
+            options: [
+              "Demonstrates maturity",
+              "May still be resisting discipleship",
+              "Is above correction",
+              "Has no blind spots"
+            ],
+            answer: [1],
+            explain: "Giving doesn’t replace growth in character and community."
+          },
+          {
+            q: "If income is irregular, a wise approach is…",
+            options: [
+              "Give only when comfortable",
+              "Plan a percentage and give first, then budget the rest",
+              "Stop giving entirely",
+              "Guess at year-end"
+            ],
+            answer: [1],
+            explain: "First-fruits giving honors God and brings clarity."
+          }
+        ]
+      },
+      {
+        title: "8) Give Where You’re Fed",
+        questions: [
+          {
+            q: "‘Give where you’re fed’ emphasizes…",
+            options: [
+              "Funding the voices and ministries that spiritually nourish you",
+              "Only giving locally",
+              "Never supporting the poor",
+              "Withholding until perfect leadership appears"
+            ],
+            answer: [0],
+            explain: "Support the sources of teaching and care that build you up."
+          },
+          {
+            q: "Healthy giving priorities include… (Select all that apply)",
+            options: [
+              "Your local church/primary spiritual home",
+              "Ministries that disciple you",
+              "Impulse trends on social media",
+              "Transparent, accountable organizations"
+            ],
+            answer: [0,1,3],
+            explain: "Aim giving where formation and mission are real and accountable."
+          },
+          {
+            q: "A red flag for where not to give is…",
+            options: [
+              "Clear financial reports",
+              "No accountability and secrecy",
+              "Fruitful community impact",
+              "Gospel-centered teaching"
+            ],
+            answer: [1],
+            explain: "Lack of transparency undermines trust."
+          },
+          {
+            q: "Why does ‘where you’re fed’ matter?",
+            options: [
+              "It aligns resources with spiritual formation and mission",
+              "It avoids generosity",
+              "It guarantees miracles",
+              "It replaces all other giving"
+            ],
+            answer: [0],
+            explain: "Giving fuels what forms you and serves others."
+          },
+          {
+            q: "Discernment in giving includes… (Select all that apply)",
+            options: [
+              "Prayer and counsel",
+              "Reviewing fruit and integrity",
+              "Following hype",
+              "Clarity about your call"
+            ],
+            answer: [0,1,3],
+            explain: "Discernment asks what God is doing and how to align with it."
+          },
+          {
+            q: "If a ministry feeds you but lacks any accountability, a wise response is…",
+            options: [
+              "Give anyway without questions",
+              "Seek clarity; consider redirecting until healthy governance exists",
+              "Publicly shame them",
+              "Stop all giving everywhere"
+            ],
+            answer: [1],
+            explain: "Support with wisdom; accountability protects everyone."
+          },
+          {
+            q: "Giving where you’re fed should produce…",
+            options: [
+              "Greater maturity, mission, and gratitude",
+              "Pride and rivalry",
+              "Isolation",
+              "Debt"
+            ],
+            answer: [0],
+            explain: "Life-giving ministries nurture growth and mission."
+          }
+        ]
+      },
+      {
+        title: "9) Partnership",
+        questions: [
+          {
+            q: "Biblical partnership in giving means…",
+            options: [
+              "Spectating from a distance",
+              "Shared participation and reward in the gospel work",
+              "Paying for miracles",
+              "Replacing prayer with money"
+            ],
+            answer: [1],
+            explain: "Philippians 1 highlights shared partnership (koinonia) in the gospel."
+          },
+          {
+            q: "Healthy ministry partnerships include… (Select all that apply)",
+            options: [
+              "Mutual prayer",
+              "Clear communication",
+              "Financial integrity",
+              "Celebrity focus"
+            ],
+            answer: [0,1,2],
+            explain: "Partnership is relational, transparent, and mission-focused."
+          },
+          {
+            q: "A partner’s mindset says…",
+            options: [
+              "This is ‘their’ ministry, not mine",
+              "We share in the mission, fruit, and responsibility",
+              "Money replaces service",
+              "Results don’t matter"
+            ],
+            answer: [1],
+            explain: "Partners participate and rejoice together in fruit."
+          },
+          {
+            q: "Which practices strengthen partnership? (Select all that apply)",
+            options: [
+              "Regular updates",
+              "Prayer gatherings",
+              "Anonymous slander",
+              "Financial reports"
+            ],
+            answer: [0,1,3],
+            explain: "Trust grows through communication, prayer, and transparency."
+          },
+          {
+            q: "A warning sign in a partnership is…",
+            options: [
+              "Eagerness for accountability",
+              "Secrecy and manipulation",
+              "Clear fruit of ministry",
+              "Shared vision"
+            ],
+            answer: [1],
+            explain: "Manipulation and secrecy corrode true partnership."
+          },
+          {
+            q: "Partnership shapes your budget by…",
+            options: [
+              "Allocating a planned portion to shared mission",
+              "Eliminating savings",
+              "Only giving spontaneously",
+              "Chasing trends"
+            ],
+            answer: [0],
+            explain: "Partners plan their participation, not just react."
+          },
+          {
+            q: "A healthy outcome of partnership is…",
+            options: [
+              "Mutual encouragement and multiplied impact",
+              "Self-importance",
+              "Division",
+              "Celebrity culture"
+            ],
+            answer: [0],
+            explain: "Together we do more, with shared joy."
+          }
+        ]
+      },
+      {
+        title: "10) In God We Trust",
+        questions: [
+          {
+            q: "Trusting God with finances chiefly means…",
+            options: [
+              "Ignoring wisdom",
+              "Placing ultimate confidence in God while practicing wise stewardship",
+              "Avoiding work",
+              "Never planning"
+            ],
+            answer: [1],
+            explain: "Trust and wisdom go together—faith isn’t irresponsibility."
+          },
+          {
+            q: "What erodes trust in God? (Select all that apply)",
+            options: [
+              "Chronic comparison",
+              "Thanksgiving and testimony",
+              "Fear-driven hoarding",
+              "Secretiveness"
+            ],
+            answer: [0,2,3],
+            explain: "Comparison and fear stifle faith; secrecy resists help."
+          },
+          {
+            q: "Practices that grow trust include… (Select all that apply)",
+            options: [
+              "Scripture meditation",
+              "Prayer and fasting",
+              "Ignoring counsel",
+              "Obedient generosity"
+            ],
+            answer: [0,1,3],
+            explain: "Trust deepens through communion with God and obedience."
+          },
+          {
+            q: "A heart anchored in trust will…",
+            options: [
+              "Panic at every bill",
+              "Hold things loosely and give joyfully",
+              "Avoid responsibility",
+              "Refuse budgeting"
+            ],
+            answer: [1],
+            explain: "Trust frees us to give and manage with peace."
+          },
+          {
+            q: "In seasons of scarcity, a steward can… (Select all that apply)",
+            options: [
+              "Pray, plan, and seek counsel",
+              "Abandon integrity",
+              "Remember testimonies of God’s faithfulness",
+              "Stay generous within wisdom"
+            ],
+            answer: [0,2,3],
+            explain: "Scarcity invites faith, wisdom, and continued generosity."
+          },
+          {
+            q: "Trusting God changes our speech by…",
+            options: [
+              "Filling it with complaint",
+              "Shaping it with gratitude, Scripture, and hope",
+              "Silencing prayer",
+              "Boasting in self"
+            ],
+            answer: [1],
+            explain: "Words reflect the heart; trust speaks life."
+          },
+          {
+            q: "The opposite slogan of ‘In God We Trust’ in daily life would be…",
+            options: [
+              "In my plans alone I trust",
+              "God is faithful",
+              "Give thanks in all things",
+              "Seek first the kingdom"
+            ],
+            answer: [0],
+            explain: "Self-reliance displaces the posture of faith."
+          }
+        ]
+      }
+    ];
+
+    // ===== RENDERING & LOGIC =====
+    const chaptersBar = document.getElementById('chaptersBar');
+    const quizCard = document.getElementById('quizCard');
+    let current = 0;
+
+    function renderChapters() {
+      chaptersBar.innerHTML = '';
+      QUIZ.forEach((c, idx) => {
+        const btn = document.createElement('button');
+        btn.textContent = c.title;
+        btn.className = idx === current ? 'active' : '';
+        btn.addEventListener('click', () => {
+          current = idx; render();
+          document.querySelectorAll('.chapters-bar button').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        chaptersBar.appendChild(btn);
+      });
+    }
+
+    function render() {
+      const chapter = QUIZ[current];
+      const totalQs = chapter.questions.length;
+      quizCard.innerHTML = `
+        <div class="meta"><span><strong>${chapter.title}</strong></span><span>·</span><span>${totalQs} Questions · Checkboxes</span></div>
+      `;
+
+      chapter.questions.forEach((q, qi) => {
+        const qBox = document.createElement('div');
+        qBox.className = 'q';
+        const qId = `q-${current}-${qi}`;
+        qBox.innerHTML = `
+          <h3>${qi+1}. ${q.q}</h3>
+          <div class="opts" id="${qId}"></div>
+          <div class="explain">${q.explain}</div>
+        `;
+        quizCard.appendChild(qBox);
+
+        const optsWrap = qBox.querySelector('.opts');
+        q.options.forEach((opt, oi) => {
+          const optId = `${qId}-opt-${oi}`;
+          const row = document.createElement('label');
+          row.className = 'opt';
+          row.setAttribute('for', optId);
+          row.innerHTML = `
+            <input type="checkbox" id="${optId}" data-qi="${qi}" data-oi="${oi}" />
+            <span>${opt}</span>
+          `;
+          optsWrap.appendChild(row);
+        });
+      });
+
+      const controls = document.createElement('div');
+      controls.className = 'controls';
+      controls.innerHTML = `
+        <button class="btn primary" id="checkBtn">Check answers</button>
+        <button class="btn" id="toggleExplain">Show explanations</button>
+        <button class="btn warn" id="resetBtn">Reset selections</button>
+        <span class="score" id="scoreArea"></span>
+      `;
+      quizCard.appendChild(controls);
+
+      document.getElementById('checkBtn').addEventListener('click', gradeChapter);
+      document.getElementById('resetBtn').addEventListener('click', resetChapter);
+      document.getElementById('toggleExplain').addEventListener('click', toggleExplain);
+    }
+
+    function getSelections() {
+      // returns array of arrays of selected indices for each question
+      const chapter = QUIZ[current];
+      return chapter.questions.map((q, qi) => {
+        const qId = `q-${current}-${qi}`;
+        const checkboxes = Array.from(document.querySelectorAll(`#${qId} input[type=checkbox]`));
+        return checkboxes.reduce((acc, cb, oi) => (cb.checked ? acc.concat(oi) : acc), []);
+      });
+    }
+
+    function arraysEqual(a, b) {
+      if (a.length !== b.length) return false;
+      const A = [...a].sort((x,y)=>x-y);
+      const B = [...b].sort((x,y)=>x-y);
+      return A.every((v,i)=>v===B[i]);
+    }
+
+    function gradeChapter() {
+      const chapter = QUIZ[current];
+      const selections = getSelections();
+      let correctCount = 0;
+
+      chapter.questions.forEach((q, qi) => {
+        const qId = `q-${current}-${qi}`;
+        const optLabels = Array.from(document.querySelectorAll(`#${qId} .opt`));
+        const chosen = selections[qi];
+        const isCorrect = arraysEqual(chosen, q.answer);
+        if (isCorrect) correctCount++;
+
+        // Visual feedback per option
+        optLabels.forEach((label, oi) => {
+          label.classList.remove('correct','incorrect');
+          const checked = label.querySelector('input').checked;
+          const shouldBeChecked = q.answer.includes(oi);
+          if (checked === shouldBeChecked) {
+            // highlight only if user interacted
+            if (checked) label.classList.add('correct');
+          } else if (checked !== shouldBeChecked) {
+            if (checked) label.classList.add('incorrect');
+          }
+        });
+      });
+
+      document.getElementById('scoreArea').textContent = `Score: ${correctCount} / ${chapter.questions.length}`;
+    }
+
+    function resetChapter() {
+      const inputs = document.querySelectorAll('#quizCard input[type=checkbox]');
+      inputs.forEach(cb => { cb.checked = false; });
+      document.getElementById('scoreArea').textContent = '';
+      document.querySelectorAll('.opt').forEach(el=>el.classList.remove('correct','incorrect'));
+    }
+
+    function toggleExplain() {
+      const card = document.getElementById('quizCard');
+      card.classList.toggle('show-explain');
+      const showing = card.classList.contains('show-explain');
+      const btn = document.getElementById('toggleExplain');
+      btn.textContent = showing ? 'Hide explanations' : 'Show explanations';
+    }
+
+    // Init
+    renderChapters();
+    render();
+  </script>
+</body>
+</html>
